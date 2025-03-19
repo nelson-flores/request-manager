@@ -30,13 +30,20 @@ $request->setHeader('Authorization', 'Bearer token')
         ->setHeader('Accept', 'application/json');
 ```
 
-### Sending Data (POST)
+### Setting Authentication
+
+```php
+$request->setBearerToken('your_token_here'); // Uses Bearer Token authentication
+$request->setAuth('username', 'password');   // Uses Basic Auth
+```
+
+### Sending JSON Data (POST)
 
 ```php
 use Flores\RequestManager\Requests\PostRequest;
 
 $request = new PostRequest('https://yoururl.com/api/resource');
-$request->setPayloads([
+$request->setJsonBody([
     'title' => 'New Post',
     'body' => 'Post content',
     'userId' => 1
@@ -69,6 +76,9 @@ echo $response->get(); // Returns the raw response as a string
 - `setHeader($key, $value)`: Sets an HTTP header.
 - `setHeaders(array $headers)`: Sets multiple headers at once.
 - `setPayloads(array $payloads)`: Sets the request body.
+- `setJsonBody(array $data)`: Sets the request body as JSON.
+- `setBearerToken($token)`: Sets the Authorization header using Bearer Token.
+- `setAuth($user, $passwd)`: Sets Basic Authentication credentials.
 - `setContentType($contentType)`: Sets the request content type.
 - `setCurlOption($key, $value)`: Sets a custom cURL option.
 - `getUrl()`: Returns the request URL.
@@ -117,4 +127,3 @@ try {
 ## 📄 License
 
 This project is licensed under the [MIT License](LICENSE).
-

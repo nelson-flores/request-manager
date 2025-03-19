@@ -61,12 +61,25 @@ abstract class HttpRequest
      */
     abstract public function send();
 
+    /**
+     * Sets a single request header.
+     *
+     * @param string $key Header name.
+     * @param string $value Header value.
+     * @return $this
+     */
     public function setHeader($key, $value)
     {
         $this->headers[$key] = $value;
         return $this;
     }
 
+    /**
+     * Sets multiple request headers.
+     *
+     * @param array $headers Associative array of headers.
+     * @return $this
+     */
     public function setHeaders(array $headers)
     {
         foreach ($headers as $key => $value) {
@@ -74,6 +87,74 @@ abstract class HttpRequest
         }
         return $this;
     }
+
+    /**
+     * Sets the Authorization header with a Bearer token.
+     *
+     * @param string $token Bearer token.
+     * @return $this
+     */
+    public function setBearerToken($token)
+    {
+        $this->setHeader('Authorization', 'Bearer ' . $token);
+        return $this;
+    }
+
+    /**
+     * Adds custom authentication header.
+     *
+     * @param string $key Authentication type.
+     * @param string $value Authentication value.
+     * @return $this
+     */
+    public function addCustomAuth($key, $value)
+    {
+        $this->setCurlOption(CURLOPT_HTTPHEADER, ['Authorization: ' . $key . ' ' . $value]);
+        return $this;
+    }
+
+    /**
+     * Sets basic authentication credentials.
+     *
+     * @param string $user Username.
+     * @param string $passwd Password.
+     * @return $this
+     */
+    public function setAuth($user, $passwd)
+    {
+        $this->setCurlOption(CURLOPT_HTTPAUTH, CURLAUTH_ANY);
+        $this->setCurlOption(CURLOPT_USERPWD, $user . ':' . $passwd);
+        return $this;
+    }
+
+    /**
+     * Sets the request body as JSON.
+     *
+     * @param array $data Associative array to be converted to JSON.
+     */
+    public function setJsonBody(array $data): void
+    {
+        $jsonData = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+
+        $this->setCurlOption(CURLOPT_POSTFIELDS, $jsonData);
+        $this->setCurlOption(CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    }
+
+    /**
+     * Sets the HTTP method for the request.
+     *
+     * @param string $method HTTP method (GET, POST, etc.).
+     * @return $this
+     */
+    public function setMethod($method)
+    {
+        $this->method = strtoupper($method);
+        return $this;
+    }
+
+
+
+
 
     /**
      * Enables automatic redirection handling.
@@ -116,12 +197,6 @@ abstract class HttpRequest
         return $this;
     }
 
-
-    public function setMethod($method)
-    {
-        $this->method = strtoupper($method);
-        return $this;
-    }
 
     public function post()
     {
@@ -257,6 +332,15 @@ abstract class HttpRequest
         return $this;
     }
 
+
+
+    /**
+     * Executes the HTTP request using cURL.
+     *
+     * @return HttpResponse Response object.
+     * @throws HttpRequestException If no URL is specified.
+     * @throws HttpConnectionException If the request fails.
+     */
     public function executeRequest()
     {
         if (!$this->url) {
@@ -275,6 +359,9 @@ abstract class HttpRequest
         return new HttpResponse($this, $response, $error, $httpCode);
     }
 
+    /**
+     * Applies stored cURL options.
+     */
     private function handleCurlOptions()
     {
         foreach ($this->curlOptions as $key => $value) {
@@ -282,6 +369,9 @@ abstract class HttpRequest
         }
     }
 
+    /**
+     * Closes the cURL session when the object is destroyed.
+     */
     public function __destruct()
     {
         curl_close($this->ch);
