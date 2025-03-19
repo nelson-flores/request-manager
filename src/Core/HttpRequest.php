@@ -116,10 +116,93 @@ abstract class HttpRequest
         return $this;
     }
 
+
+    public function setMethod($method)
+    {
+        $this->method = strtoupper($method);
+        return $this;
+    }
+
+    public function post()
+    {
+        $this->setMethod(self::$METHOD_POST)->send();
+        return $this;
+    }
+
+
+
     public function getUrl()
     {
         return $this->getHandledUrl();
     }
+
+
+    /**
+     * @return string
+     */
+    public function getHost()
+    {
+        return explode("/", $this->url)[0];
+    }
+
+
+
+
+    /**
+     * @return string
+     */
+    public function getPath()
+    {
+        $path = "/";
+
+        $arr = explode("/", $this->url);
+        if (isset($arr[1])) {
+            unset($arr[0]);
+            $path = "/" . implode("/", $arr);
+        }
+
+        return $path;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMethod()
+    {
+        return $this->method;
+    }
+    /**
+     * @return string
+     */
+    public function getContentType()
+    {
+        return $this->contentType;
+    }
+
+    /*
+    * @return array
+    */
+    public function getPayloads()
+    {
+        return $this->payloads;
+    }
+
+    /*
+    * @return array
+    */
+    public function getCh()
+    {
+        return $this->ch;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRelativeUrl()
+    {
+        return $this->url;
+    }
+
 
     private function getHandledUrl()
     {

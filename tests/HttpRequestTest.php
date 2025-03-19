@@ -17,6 +17,13 @@ class HttpRequestTest extends TestCase
 
         $this->assertNotEmpty($response, 'Response should not be empty');
     }
+    public function testGetRequestReturnsResponseData()
+    {
+        $request = new GetRequest($this->validUrl);
+        $response = $request->send();
+
+        $this->assertNotEmpty($response->getData(), 'Response should not be empty');
+    }
 
     public function testPostRequestWithPayload()
     {
