@@ -1,6 +1,6 @@
 {
     "name": "flores/request-manager",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "A simple HTTP request manager using cURL",
     "keywords": ["http", "request", "curl", "http client"],
     "type": "library",
